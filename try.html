@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touch No Fire Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fce6c9;
+        }
+        #game-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            border: 3px solid #4dc3c3;
+            background-color: white;
+            overflow: hidden;
+        }
+        .player, .food, .fire {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            text-align: center;
+            line-height: 40px;
+        }
+        .player {
+            background-color: transparent;
+        }
+        .food {
+            background-color: transparent;
+        }
+        .fire {
+            background-color: transparent;
+        }
+        #rules {
+            margin-top: 20px;
+            font-size: 14px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 style="text-align: center; color: #e57373;">Touch No Fire</h1>
+        <div id="game-container">
+            <div id="player" class="player">😃</div>
+            <div id="food" class="food">🍔</div>
+            <div id="fire" class="fire">🔥</div>
+        </div>
+        <div id="rules">
+            <strong>Game Rules!</strong>
+            <ul>
+                <li>Eat the food to gain score</li>
+                <li>Do not touch the fire</li>
+                <li>The fire multiplies once with even scores</li>
+                <li>If you stay idle, the fire won't do anything</li>
+                <li>Please play using arrow keys</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const food = document.getElementById('food');
+        const fire = document.getElementById('fire');
+        const gameContainer = document.getElementById('game-container');
+
+        let playerX = 10, playerY = 10;
+        let foodX = 300, foodY = 200;
+        let fireX = 100, fireY = 100;
+        let score = 0;
+
+        // Set initial positions
+        function updatePosition() {
+            player.style.left = playerX + 'px';
+            player.style.top = playerY + 'px';
+
+            food.style.left = foodX + 'px';
+            food.style.top = foodY + 'px';
+
+            fire.style.left = fireX + 'px';
+            fire.style.top = fireY + 'px';
+        }
+        updatePosition();
+
+        // Randomize positions of food or fire
+        function getRandomPosition() {
+            const x = Math.floor(Math.random() * (gameContainer.offsetWidth - 40));
+            const y = Math.floor(Math.random() * (gameContainer.offsetHeight - 40));
+            return { x, y };
+        }
+
+        // Handle arrow key movement
+        document.addEventListener('keydown', (e) => {
+            const step = 10;
+            if (e.key === 'ArrowUp') playerY = Math.max(0, playerY - step);
+            if (e.key === 'ArrowDown') playerY = Math.min(gameContainer.offsetHeight - 40, playerY + step);
+            if (e.key === 'ArrowLeft') playerX = Math.max(0, playerX - step);
+            if (e.key === 'ArrowRight') playerX = Math.min(gameContainer.offsetWidth - 40, playerX + step);
+
+            updatePosition();
+            checkCollision();
+        });
+
+        // Check collision between player and food/fire
+        function checkCollision() {
+            if (Math.abs(playerX - foodX) < 40 && Math.abs(playerY - foodY) < 40) {
+                score++;
+                const newPos = getRandomPosition();
+                foodX = newPos.x;
+                foodY = newPos.y;
+
+                if (score % 2 === 0) {
+                    const firePos = getRandomPosition();
+                    fireX = firePos.x;
+                    fireY = firePos.y;
+                }
+                updatePosition();
+                alert(`Score: ${score}`);
+            }
+
+            if (Math.abs(playerX - fireX) < 40 && Math.abs(playerY - fireY) < 40) {
+                alert('Game Over!');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
